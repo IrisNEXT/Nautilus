@@ -297,7 +297,7 @@ foreach ($Feature in $OptionalFeatures) {
     Disable-WindowsOptionalFeature -Path $MountDir -FeatureName $Feature -Remove -NoRestart -ErrorAction SilentlyContinue 2>$null | Out-Null
 }
 
-Write-Host "`n[5/14] Removing Edge and OneDrive..." -ForegroundColor Yellow
+Write-Host "`n[6/14] Removing Edge and OneDrive..." -ForegroundColor Yellow
 
 $AdminGroup = (New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')).Translate([System.Security.Principal.NTAccount]).Value
 
@@ -310,7 +310,7 @@ $EdgePaths = @(
 
 foreach ($Path in $EdgePaths) {
     if (Test-Path $Path) {
-        Write-Host "  - Forcibly removing: $Path" -ForegroundColor DarkGray
+        Write-Host "  - Removed $Path" -ForegroundColor DarkGray
         takeown.exe /F $Path /R /A /D Y 2>$null | Out-Null
         icacls.exe $Path /grant "$($AdminGroup):(F)" /T /C /Q 2>$null | Out-Null
         Remove-Item -Path $Path -Recurse -Force -ErrorAction SilentlyContinue
@@ -319,7 +319,7 @@ foreach ($Path in $EdgePaths) {
 
 $OneDrivePath = "$MountDir\Windows\System32\OneDriveSetup.exe"
 if (Test-Path $OneDrivePath) {
-    Write-Host "  - Forcibly removing: $Path" -ForegroundColor DarkGray
+    Write-Host "  - Removed $Path" -ForegroundColor DarkGray
     takeown.exe /F $OneDrivePath /A 2>$null | Out-Null
     icacls.exe $OneDrivePath /grant "$($AdminGroup):(F)" /C /Q 2>$null | Out-Null
     Remove-Item -Path $OneDrivePath -Force -ErrorAction SilentlyContinue
