@@ -326,7 +326,7 @@ if (Test-Path $OneDrivePath) {
 }
 
 # Phase 9: Removing SystemPackages
-Write-Host "`n[6/14] Removing system packages..." -ForegroundColor Yellow
+Write-Host "`n[7/14] Removing system packages..." -ForegroundColor Yellow
 
 $PackagePatterns = @(
     "*InternetExplorer-Optional*",
@@ -340,7 +340,13 @@ $PackagePatterns = @(
     "*Narrator-App*",
     "*Magnifier-App*",
     "*Wallpaper-Content-Extended*",
-    "*Media-MPEG2-Decoder*"
+    "*Media-MPEG2-Decoder*",
+    "*TabletPCMath*",
+    "*Wallpaper-Content-Extended*",
+    "*LanguageFeatures-Handwriting*",
+    "*LanguageFeatures-OCR*",
+    "*LanguageFeatures-Speech*",
+    "*LanguageFeatures-TextToSpeech*"
 )
 
 $AllPackages = Get-WindowsPackage -Path $MountDir
