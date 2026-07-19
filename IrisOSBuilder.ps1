@@ -478,7 +478,7 @@ try {
     Write-Output "  - Deleting Edge related registries..."
     Remove-RegistryValue "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge"
     Remove-RegistryValue "HKLM\zSOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Uninstall\Microsoft Edge Update"
-    Write-Host "  - Deleting Telemetry Scheduled Tasks..."
+    Write-Output "  - Deleting Telemetry Scheduled Tasks..."
     $tasksPath = "$MountDir\Windows\System32\Tasks"
     Remove-Item -Path "$tasksPath\Microsoft\Windows\Application Experience\Microsoft Compatibility Appraiser" -Force -ErrorAction SilentlyContinue
     Remove-Item -Path "$tasksPath\Microsoft\Windows\Customer Experience Improvement Program" -Recurse -Force -ErrorAction SilentlyContinue
