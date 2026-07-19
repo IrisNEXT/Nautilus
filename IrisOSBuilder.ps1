@@ -250,6 +250,22 @@ foreach ($File in $TelemetryFiles) {
     }
 }
 
+Write-Output "  - Deleting Retail Demo & Help..." -ForegroundColor DarkGray
+$UselessFolders = @(
+    "$MountDir\Windows\System32\RetailDemo",
+    "$MountDir\Windows\Help",
+    "$MountDir\Windows\System32\DiagSvcs",
+    "$MountDir\PerfLogs"
+)
+
+foreach ($Folder in $UselessFolders) {
+    if (Test-Path $Folder) {
+        takeown.exe /F $Folder /R /A /D Y 2>$null | Out-Null
+        icacls.exe $Folder /grant "$($AdminGroup):(F)" /T /C /Q 2>$null | Out-Null
+        Remove-Item -Path $Folder -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
 Write-Host "`n[5/14] Removing Edge and OneDrive..." -ForegroundColor Yellow
 
 $AdminGroup = (New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')).Translate([System.Security.Principal.NTAccount]).Value
