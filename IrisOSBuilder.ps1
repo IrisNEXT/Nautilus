@@ -283,6 +283,19 @@ foreach ($File in $AccessibilityExes) {
     }
 }
 
+Write-Host "`n[5/14] Deleting Windows optional features..." -ForegroundColor Yellow
+$OptionalFeatures = @(
+    "FaxServicesClientPackage",
+    "Printing-Foundation-InternetPrinting-Client",
+    "WorkFolders-Client",
+    "MediaPlayback",
+    "SMB1Protocol"
+)
+
+foreach ($Feature in $OptionalFeatures) {
+    Write-Host "  - Purged $Feature" -ForegroundColor DarkGray
+    Disable-WindowsOptionalFeature -Path $MountDir -FeatureName $Feature -Remove -NoRestart -ErrorAction SilentlyContinue 2>$null | Out-Null
+}
 
 Write-Host "`n[5/14] Removing Edge and OneDrive..." -ForegroundColor Yellow
 
