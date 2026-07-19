@@ -223,6 +223,33 @@ foreach ($App in $AppsToRemove) {
     }
 }
 
+    Write-Output "  - Deleting Telemetry files..."
+
+$TelemetryFiles = @(
+    "$MountDir\Windows\System32\smartscreen.exe",
+    "$MountDir\Windows\System32\wsqmcons.exe",
+    "$MountDir\Windows\System32\appraiser.exe",
+    "$MountDir\Windows\System32\CompatTelRunner.exe",
+    "$MountDir\Windows\System32\DeviceCensus.exe",
+    "$MountDir\Windows\System32\WaasMedicAgent.exe",
+    "$MountDir\Windows\System32\sedlauncher.exe",
+    "$MountDir\Windows\System32\upfc.exe",
+    "$MountDir\Windows\System32\MusNotification.exe",
+    "$MountDir\Windows\System32\MusNotificationUx.exe",
+    "$MountDir\Windows\System32\GameBarPresenceWriter.exe",
+    "$MountDir\Windows\System32\SecurityHealthSystray.exe",
+    "$MountDir\Windows\System32\oobe\UserOOBEBroker.exe",
+    "$MountDir\Windows\System32\SgrmBroker.exe"
+)
+
+foreach ($File in $TelemetryFiles) {
+    if (Test-Path $File) {
+        takeown.exe /F $File /A 2>$null | Out-Null
+        icacls.exe $File /grant "$($AdminGroup):(F)" /C /Q 2>$null | Out-Null
+        Remove-Item -Path $File -Force -ErrorAction SilentlyContinue
+    }
+}
+
 Write-Host "`n[5/14] Removing Edge and OneDrive..." -ForegroundColor Yellow
 
 $AdminGroup = (New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')).Translate([System.Security.Principal.NTAccount]).Value
