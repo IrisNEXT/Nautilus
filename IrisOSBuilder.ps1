@@ -326,7 +326,7 @@ if (Test-Path $OneDrivePath) {
 }
 
 # Phase 9: Removing SystemPackages
-Write-Host "`n[7/14] Removing system packages..." -ForegroundColor Yellow
+Write-Host "`n[8/14] Removing system packages..." -ForegroundColor Yellow
 
 $PackagePatterns = @(
     "*InternetExplorer-Optional*",
@@ -412,6 +412,35 @@ try {
     Set-RegistryValue 'HKLM\zSOFTWARE\Microsoft\Windows\CurrentVersion\ReserveManager' 'ShippedWithReserves' 'REG_DWORD' '0'
     Write-Output "  - Disabling BitLocker Device Encryption..."
     Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Control\BitLocker' 'PreventDeviceEncryption' 'REG_DWORD' '1'
+    Write-Output "  - Bypassing SVCHOST Splitting to kill duplicate processes..."
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Control' 'SvcHostSplitThresholdInKB' 'REG_DWORD' '41943040'
+    Write-Output "  - Disabling Services..."
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\SysMain' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\DiagTrack' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\BITS' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\DoSvc' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\DPS' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\WdiServiceHost' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\WdiSystemHost' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\PcaSvc' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\FontCache' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\WbioSrvc' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\DusmSvc' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\WpnService' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\LanmanServer' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\LanmanWorkstation' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\TrkWks' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\MapsBroker' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\WerSvc' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\Spooler' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\SDRSVC' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\wbengine' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\fhsvc' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\wisvc' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\RemoteRegistry' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\PhoneSvc' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\RetailDemo' 'Start' 'REG_DWORD' '4'
+    Set-RegistryValue 'HKLM\zSYSTEM\ControlSet001\Services\shpamsvc' 'Start' 'REG_DWORD' '4'
     Write-Output "  - Disabling Chat..."
     Set-RegistryValue 'HKLM\zSOFTWARE\Policies\Microsoft\Windows\Windows Chat' 'ChatIcon' 'REG_DWORD' '3'
     Set-RegistryValue 'HKLM\zNTUSER\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Advanced' 'TaskbarMn' 'REG_DWORD' '0'
