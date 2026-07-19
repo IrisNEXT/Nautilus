@@ -508,7 +508,7 @@ Remove-Item -Path "$MountDir\Windows\WinSxS\Backup\*" -Force -ErrorAction Silent
 Write-Output "  - Emptying Windows Update Cache..." -ForegroundColor DarkGray
 Remove-Item -Path "$MountDir\Windows\SoftwareDistribution\Download\*" -Recurse -Force -ErrorAction SilentlyContinue
 
-# Phase 13: Saving & Exporting
+# Phase 12: Saving & Exporting
 Write-Host "`n[10/14] Saving changes to install.wim..." -ForegroundColor Yellow
 dism.exe /Unmount-Image /MountDir:"$MountDir" /Commit | Out-Null
 
@@ -531,7 +531,7 @@ if ($CompressChoice -eq '2') {
     Rename-Item -Path "$ExtractDir\sources\install_optimized.wim" -NewName "install.wim"
 }
 
-# Phase 14: Bypass
+# Phase 13: Bypass
 Write-Host "`n[11/14] Mounting boot.wim to bypass hardwares..." -ForegroundColor Yellow
 dism.exe /Mount-Image /ImageFile:"$ExtractDir\sources\boot.wim" /Index:2 /MountDir:"$MountDir"
 
@@ -562,7 +562,7 @@ finally {
 Write-Host "`n[12/14] Saving changes to boot.wim..." -ForegroundColor Yellow
 dism.exe /Unmount-Image /MountDir:"$MountDir" /Commit
 
-# Phase 15: Autounattend.xml
+# Phase 14: Autounattend.xml
 Write-Host "`n[13/14] Generating autounattend.xml..." -ForegroundColor Yellow
 $XmlContent = @"
 <?xml version="1.0" encoding="utf-8"?>
@@ -587,7 +587,7 @@ $XmlContent = @"
 "@
 $XmlContent | Out-File -FilePath "$ExtractDir\autounattend.xml" -Encoding UTF8
 
-# Phase 16: Creating ISO files
+# Phase 15: Creating ISO files
 Write-Host "`n[14/14] ISO Creation Process..." -ForegroundColor Yellow
 
 $OscdimgPath = "$Workspace\oscdimg.exe"
