@@ -222,7 +222,35 @@ foreach ($App in $AppsToRemove) {
     }
 }
 
-    Write-Output "  - Deleting Telemetry files..."
+Write-Host "`n[5/14] Removing Edge and OneDrive..." -ForegroundColor Yellow
+
+$AdminGroup = (New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')).Translate([System.Security.Principal.NTAccount]).Value
+
+$EdgePaths = @(
+    "$MountDir\Program Files (x86)\Microsoft\Edge",
+    "$MountDir\Program Files (x86)\Microsoft\EdgeUpdate",
+    "$MountDir\Program Files (x86)\Microsoft\EdgeCore",
+    "$MountDir\Windows\System32\Microsoft-Edge-Webview"
+)
+
+foreach ($Path in $EdgePaths) {
+    if (Test-Path $Path) {
+        Write-Host "  - Removed $Path" -ForegroundColor DarkGray
+        takeown.exe /F $Path /R /A /D Y 2>$null | Out-Null
+        icacls.exe $Path /grant "$($AdminGroup):(F)" /T /C /Q 2>$null | Out-Null
+        Remove-Item -Path $Path -Recurse -Force -ErrorAction SilentlyContinue
+    }
+}
+
+$OneDrivePath = "$MountDir\Windows\System32\OneDriveSetup.exe"
+if (Test-Path $OneDrivePath) {
+    Write-Host "  - Removed $Path" -ForegroundColor DarkGray
+    takeown.exe /F $OneDrivePath /A 2>$null | Out-Null
+    icacls.exe $OneDrivePath /grant "$($AdminGroup):(F)" /C /Q 2>$null | Out-Null
+    Remove-Item -Path $OneDrivePath -Force -ErrorAction SilentlyContinue
+}
+
+ Write-Output "  - Deleting Telemetry files..."
 
 $TelemetryFiles = @(
     "$MountDir\Windows\System32\wsqmcons.exe",
@@ -280,7 +308,6 @@ foreach ($File in $AccessibilityExes) {
     }
 }
 
-Write-Host "`n[5/14] Deleting Windows optional features..." -ForegroundColor Yellow
 $OptionalFeatures = @(
     "FaxServicesClientPackage",
     "Printing-Foundation-InternetPrinting-Client",
@@ -294,36 +321,8 @@ foreach ($Feature in $OptionalFeatures) {
     Disable-WindowsOptionalFeature -Path $MountDir -FeatureName $Feature -Remove -NoRestart -ErrorAction SilentlyContinue 2>$null | Out-Null
 }
 
-Write-Host "`n[6/14] Removing Edge and OneDrive..." -ForegroundColor Yellow
-
-$AdminGroup = (New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')).Translate([System.Security.Principal.NTAccount]).Value
-
-$EdgePaths = @(
-    "$MountDir\Program Files (x86)\Microsoft\Edge",
-    "$MountDir\Program Files (x86)\Microsoft\EdgeUpdate",
-    "$MountDir\Program Files (x86)\Microsoft\EdgeCore",
-    "$MountDir\Windows\System32\Microsoft-Edge-Webview"
-)
-
-foreach ($Path in $EdgePaths) {
-    if (Test-Path $Path) {
-        Write-Host "  - Removed $Path" -ForegroundColor DarkGray
-        takeown.exe /F $Path /R /A /D Y 2>$null | Out-Null
-        icacls.exe $Path /grant "$($AdminGroup):(F)" /T /C /Q 2>$null | Out-Null
-        Remove-Item -Path $Path -Recurse -Force -ErrorAction SilentlyContinue
-    }
-}
-
-$OneDrivePath = "$MountDir\Windows\System32\OneDriveSetup.exe"
-if (Test-Path $OneDrivePath) {
-    Write-Host "  - Removed $Path" -ForegroundColor DarkGray
-    takeown.exe /F $OneDrivePath /A 2>$null | Out-Null
-    icacls.exe $OneDrivePath /grant "$($AdminGroup):(F)" /C /Q 2>$null | Out-Null
-    Remove-Item -Path $OneDrivePath -Force -ErrorAction SilentlyContinue
-}
-
 # Phase 9: Removing SystemPackages
-Write-Host "`n[8/14] Removing system packages..." -ForegroundColor Yellow
+Write-Host "`n[6/14] Removing system packages..." -ForegroundColor Yellow
 
 $PackagePatterns = @(
     "*InternetExplorer-Optional*",
@@ -494,7 +493,7 @@ finally {
 }
 
 # Phase 11: ResetBase
-Write-Host "`n[9/14] Deep cleaning image components..." -ForegroundColor Yellow
+Write-Host "`n[8/14] Deep cleaning image components..." -ForegroundColor Yellow
 
 Write-Output " - Applying ResetBase..." -ForegroundColor Yellow
 dism.exe /Image:$MountDir /Cleanup-Image /StartComponentCleanup /ResetBase | Out-Null
@@ -506,7 +505,7 @@ Write-Output "  - Emptying Windows Update Cache..." -ForegroundColor DarkGray
 Remove-Item -Path "$MountDir\Windows\SoftwareDistribution\Download\*" -Recurse -Force -ErrorAction SilentlyContinue
 
 # Phase 12: Saving & Exporting
-Write-Host "`n[10/14] Saving changes to install.wim..." -ForegroundColor Yellow
+Write-Host "`n[9/14] Saving changes to install.wim..." -ForegroundColor Yellow
 dism.exe /Unmount-Image /MountDir:"$MountDir" /Commit | Out-Null
 
 Write-Host "`n[!] Choose the compression format:" -ForegroundColor Cyan
@@ -529,7 +528,7 @@ if ($CompressChoice -eq '2') {
 }
 
 # Phase 13: Bypass
-Write-Host "`n[11/14] Mounting boot.wim to bypass hardwares..." -ForegroundColor Yellow
+Write-Host "`n[10/14] Mounting boot.wim to bypass hardwares..." -ForegroundColor Yellow
 dism.exe /Mount-Image /ImageFile:"$ExtractDir\sources\boot.wim" /Index:2 /MountDir:"$MountDir"
 
 try {
@@ -556,11 +555,11 @@ finally {
     Start-Sleep -Seconds 3
 }
 
-Write-Host "`n[12/14] Saving changes to boot.wim..." -ForegroundColor Yellow
+Write-Host "`n[11/14] Saving changes to boot.wim..." -ForegroundColor Yellow
 dism.exe /Unmount-Image /MountDir:"$MountDir" /Commit
 
 # Phase 14: Autounattend.xml
-Write-Host "`n[13/14] Generating autounattend.xml..." -ForegroundColor Yellow
+Write-Host "`n[12/14] Generating autounattend.xml..." -ForegroundColor Yellow
 $XmlContent = @"
 <?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend">
@@ -585,7 +584,7 @@ $XmlContent = @"
 $XmlContent | Out-File -FilePath "$ExtractDir\autounattend.xml" -Encoding UTF8
 
 # Phase 15: Creating ISO files
-Write-Host "`n[14/14] ISO Creation Process..." -ForegroundColor Yellow
+Write-Host "`n[13/14] ISO Creation Process..." -ForegroundColor Yellow
 
 $OscdimgPath = "$Workspace\oscdimg.exe"
 $MicrosoftUrl = "https://msdl.microsoft.com/download/symbols/oscdimg.exe/3D44737265000/oscdimg.exe"
@@ -607,7 +606,7 @@ if (Test-Path $OscdimgPath) {
     
     Start-Process -FilePath $OscdimgPath -ArgumentList $BuildArgs -Wait -NoNewWindow
     
-    Write-Host "`nCompleted! Your ISO is ready at: $FinalISO" -ForegroundColor Green
+    Write-Host "`n[14/14] Completed! Your ISO is ready at: $FinalISO" -ForegroundColor Green
     Write-Host "Cleaning up workspace..." -ForegroundColor DarkGray
     Remove-Item -Path $Workspace -Recurse -Force
 } else {
