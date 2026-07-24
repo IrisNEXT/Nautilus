@@ -149,7 +149,6 @@ $AppsToRemove = @(
     'Microsoft.Whiteboard',
     'Microsoft.WidgetsPlatformRuntime',
     'Microsoft.Windows.AAR',
-    'Microsoft.Windows.Apprep.ChxApp',
     'Microsoft.Windows.AssignedAccessLockApp',
     'Microsoft.Windows.CallingShellApp',
     'Microsoft.Windows.CloudExperienceHost',
@@ -226,7 +225,6 @@ foreach ($App in $AppsToRemove) {
     Write-Output "  - Deleting Telemetry files..."
 
 $TelemetryFiles = @(
-    "$MountDir\Windows\System32\smartscreen.exe",
     "$MountDir\Windows\System32\wsqmcons.exe",
     "$MountDir\Windows\System32\appraiser.exe",
     "$MountDir\Windows\System32\CompatTelRunner.exe",
@@ -237,7 +235,6 @@ $TelemetryFiles = @(
     "$MountDir\Windows\System32\MusNotification.exe",
     "$MountDir\Windows\System32\MusNotificationUx.exe",
     "$MountDir\Windows\System32\GameBarPresenceWriter.exe",
-    "$MountDir\Windows\System32\SecurityHealthSystray.exe",
     "$MountDir\Windows\System32\oobe\UserOOBEBroker.exe",
     "$MountDir\Windows\System32\SgrmBroker.exe"
 )
