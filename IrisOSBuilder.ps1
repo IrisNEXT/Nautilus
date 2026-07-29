@@ -206,8 +206,17 @@ $OptionalFeatures = @(
 )
 
 foreach ($Feature in $OptionalFeatures) {
-    Write-Host "  - Purged $Feature" -ForegroundColor DarkGray
-    Disable-WindowsOptionalFeature -Path $MountDir -FeatureName $Feature -Remove -NoRestart -ErrorAction SilentlyContinue 2>$null | Out-Null
+    $CheckFeature = Get-WindowsOptionalFeature -Path $MountDir -FeatureName $Feature -ErrorAction SilentlyContinue
+    
+    if ($CheckFeature) {
+        Write-Host "  - Deleted $Feature" -ForegroundColor DarkGray
+        try {
+            Disable-WindowsOptionalFeature -Path $MountDir -FeatureName $Feature -Remove -NoRestart -ErrorAction Stop | Out-Null
+        } catch {
+        }
+    } else {
+        Write-Host "  - Skipped $Feature (Not found in this Windows edition)" -ForegroundColor DarkGray
+    }
 }
 
 # Phase 9: Removing SystemPackages
