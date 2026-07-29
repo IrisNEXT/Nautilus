@@ -123,13 +123,12 @@ foreach ($App in $InstalledPackages) {
 
 Write-Host "`n[5/14] Removing Edge and OneDrive..." -ForegroundColor Yellow
 
-$AdminGroup = (New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')).Translate([System.Security.Principal.NTAccount]).Value
-
 $EdgePaths = @(
     "$MountDir\Program Files (x86)\Microsoft\Edge",
     "$MountDir\Program Files (x86)\Microsoft\EdgeUpdate",
     "$MountDir\Program Files (x86)\Microsoft\EdgeCore",
-    "$MountDir\Windows\System32\Microsoft-Edge-Webview"
+    "$MountDir\Windows\System32\Microsoft-Edge-Webview",
+    "$MountDir\Program Files (x86)\Microsoft\EdgeWebView"
 )
 
 foreach ($Path in $EdgePaths) {
@@ -141,15 +140,24 @@ foreach ($Path in $EdgePaths) {
     }
 }
 
-$OneDrivePath = "$MountDir\Windows\System32\OneDriveSetup.exe"
-if (Test-Path $OneDrivePath) {
-    Write-Host "  - Removed $Path" -ForegroundColor DarkGray
-    takeown.exe /F $OneDrivePath /A 2>$null | Out-Null
-    icacls.exe $OneDrivePath /grant "$($AdminGroup):(F)" /C /Q 2>$null | Out-Null
-    Remove-Item -Path $OneDrivePath -Force -ErrorAction SilentlyContinue
+$OneDrivePaths = @(
+    "$MountDir\Windows\System32\OneDriveSetup.exe",
+    "$MountDir\Windows\SysWOW64\OneDriveSetup.exe",
+    "$MountDir\Program Files\Microsoft OneDrive",
+    "$MountDir\Program Files (x86)\Microsoft OneDrive",
+    "$MountDir\Users\Default\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"
+)
+
+foreach ($Path in $OneDrivePaths) {
+    if (Test-Path $Path) {
+        Write-Host "  - Removed $Path" -ForegroundColor DarkGray
+        takeown.exe /F $Path /A 2>$null | Out-Null
+        icacls.exe $Path /grant "$($AdminGroup):(F)" /C /Q 2>$null | Out-Null
+        Remove-Item -Path $Path -Force -ErrorAction SilentlyContinue
+    }
 }
 
- Write-Output "  - Deleting Telemetry files..."
+ Write-Host "  - Deleting Telemetry files..."
 
 $TelemetryFiles = @(
     "$MountDir\Windows\System32\wsqmcons.exe",
@@ -162,7 +170,6 @@ $TelemetryFiles = @(
     "$MountDir\Windows\System32\MusNotification.exe",
     "$MountDir\Windows\System32\MusNotificationUx.exe",
     "$MountDir\Windows\System32\GameBarPresenceWriter.exe",
-    "$MountDir\Windows\System32\oobe\UserOOBEBroker.exe",
     "$MountDir\Windows\System32\SgrmBroker.exe"
 )
 
