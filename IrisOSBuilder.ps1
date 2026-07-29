@@ -223,19 +223,13 @@ foreach ($Feature in $OptionalFeatures) {
 Write-Host "`n[6/14] Removing system packages..." -ForegroundColor Yellow
 
 $PackagePatterns = @(
+    "*QuickAssist-*",
     "*InternetExplorer-Optional*",
     "*MediaPlayer*",
     "*WordPad-FoD*",
     "*StepsRecorder*",
     "*TabletPCMath*",
-    "*Xps-Xps-Viewer*",
     "*PowerShell-ISE-FOD*",
-    "*Kernel-LA57-FoD*",
-    "*Narrator-App*",
-    "*Magnifier-App*",
-    "*Wallpaper-Content-Extended*",
-    "*Media-MPEG2-Decoder*",
-    "*TabletPCMath*",
     "*Wallpaper-Content-Extended*",
     "*LanguageFeatures-Handwriting*",
     "*LanguageFeatures-OCR*",
@@ -243,15 +237,20 @@ $PackagePatterns = @(
     "*LanguageFeatures-TextToSpeech*"
 )
 
-$AllPackages = Get-WindowsPackage -Path $MountDir
+Write-Host "  - Scanning system packages..." -ForegroundColor DarkGray
+$DismPackagesOutput = dism.exe /Image:"$MountDir" /Get-Packages /English
+
+$AllPackageNames = $DismPackagesOutput | Select-String "Package Identity : " | ForEach-Object {
+    $_.Line.Replace("Package Identity : ", "").Trim()
+}
 
 foreach ($Pattern in $PackagePatterns) {
-    $PackagesToRemove = $AllPackages | Where-Object { $_.PackageName -like $Pattern }
+    $PackagesToRemove = $AllPackageNames | Where-Object { $_ -like $Pattern }
     
     if ($PackagesToRemove) {
         foreach ($Pkg in $PackagesToRemove) {
-            Write-Host "  - Executing system component: $($Pkg.PackageName)" -ForegroundColor DarkGray
-            Remove-WindowsPackage -Path $MountDir -PackageName $Pkg.PackageName -NoRestart -ErrorAction SilentlyContinue 2>$null | Out-Null
+            Write-Host "  - Removed $Pkg" -ForegroundColor DarkGray
+            dism.exe /Image:"$MountDir" /Remove-Package /PackageName:"$Pkg" /Quiet /NoRestart | Out-Null
         }
     }
 }
