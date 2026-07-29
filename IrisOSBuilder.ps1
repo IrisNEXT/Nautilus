@@ -80,146 +80,44 @@ if (!(Test-Path "$MountDir\Windows")) {
 }
 
 # Phase 8: Debloating
+
+$AdminGroup = (New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')).Translate([System.Security.Principal.NTAccount]).Value
+
 Write-Host "`n[4/14] Debloating system apps..." -ForegroundColor Yellow
 
-    Write-Output "  - Deleting UWP and APPX apps..."
-$AppsToRemove = @(
-    'AmazonVideo',
-    'AppUp.IntelManagementandSecurityStatus',
-    'CandyCrush',
-    'Clipchamp.Clipchamp',
-    'Disney.37853FC22B2CE',
-    'DolbyLaboratories.DolbyAccess',
-    'DolbyLaboratories.DolbyDigitalPlusDecoderOEM',
-    'Facebook',
-    'Instagram',
-    'LinkedInforWindows',
-    'Microsoft.3DBuilder',
-    'Microsoft.549981C3F5F10',
-    'Microsoft.Advertising',
-    'Microsoft.ApplicationCompatibilityEnhancements',
-    'Microsoft.BingFinance',
-    'Microsoft.BingFoodAndDrink',
-    'Microsoft.BingHealthAndFitness',
-    'Microsoft.BingNews',
-    'Microsoft.BingSearch',
-    'Microsoft.BingSports',
-    'Microsoft.BingTravel',
-    'Microsoft.BingWeather',
-    'Microsoft.CommsPhone',
-    'Microsoft.ConnectivityStore',
-    'Microsoft.Copilot',
-    'Microsoft.ECApp',
-    'Microsoft.Edge.GameAssist',
-    'Microsoft.GamingApp',
-    'Microsoft.GamingServices',
-    'Microsoft.GetHelp',
-    'Microsoft.Getstarted',
-    'Microsoft.Messaging',
-    'Microsoft.Microsoft3DViewer',
-    'Microsoft.MicrosoftEdge',
-    'Microsoft.MicrosoftEdge.Stable',
-    'Microsoft.MicrosoftEdgeDevToolsClient',
-    'Microsoft.MicrosoftOfficeHub',
-    'Microsoft.MicrosoftPowerBIForWindows',
-    'Microsoft.MicrosoftSolitaireCollection',
-    'Microsoft.MicrosoftStickyNotes',
-    'Microsoft.MicrosoftTeamsforSurfaceHub',
-    'Microsoft.MinecraftUWP',
-    'Microsoft.MixedReality.Portal',
-    'Microsoft.MSPaint',
-    'Microsoft.Office.Excel',
-    'Microsoft.Office.OneNote',
-    'Microsoft.Office.PowerPoint',
-    'Microsoft.Office.Word',
-    'Microsoft.OfficePushNotificationUtility',
-    'Microsoft.OneConnect',
-    'Microsoft.OutlookForWindows',
-    'Microsoft.Paint',
-    'Microsoft.People',
-    'Microsoft.PowerAutomateDesktop',
-    'Microsoft.PPIProjection',
-    'Microsoft.Print3D',
-    'Microsoft.ScreenSketch',
-    'Microsoft.Services.Store.Engagement',
-    'Microsoft.SkypeApp',
-    'Microsoft.StartExperiencesApp',
-    'Microsoft.StorePurchaseApp',
-    'Microsoft.Todos',
-    'Microsoft.Wallet',
-    'Microsoft.Whiteboard',
-    'Microsoft.WidgetsPlatformRuntime',
-    'Microsoft.Windows.AAR',
-    'Microsoft.Windows.AssignedAccessLockApp',
-    'Microsoft.Windows.CallingShellApp',
-    'Microsoft.Windows.CloudExperienceHost',
-    'Microsoft.Windows.ContentDeliveryManager',
-    'Microsoft.Windows.Copilot',
-    'Microsoft.Windows.Cortana',
-    'Microsoft.Windows.DevHome',
-    'Microsoft.Windows.DiagnosticDataViewer',
-    'Microsoft.Windows.HolographicFirstRun',
-    'Microsoft.Windows.MaintenanceHub',
-    'Microsoft.Windows.NarratorQuickStart',
-    'Microsoft.Windows.Notepad',
-    'Microsoft.Windows.ParentalControls',
-    'Microsoft.Windows.PeopleExperienceHost',
-    'Microsoft.Windows.Photos',
-    'Microsoft.Windows.PreviewBuilds',
-    'Microsoft.Windows.SecondaryTileExperience',
-    'Microsoft.Windows.SecureAssessmentBrowser',
-    'Microsoft.Windows.SensorHost',
-    'Microsoft.Windows.Teams',
-    'Microsoft.WindowsAlarms',
-    'Microsoft.WindowsCalculator',
-    'Microsoft.WindowsCamera',
-    'Microsoft.WindowsFeedbackHub',
-    'Microsoft.WindowsMaps',
-    'Microsoft.WindowsNotepad',
-    'Microsoft.WindowsPhone',
-    'Microsoft.WindowsReadingList',
-    'Microsoft.WindowsScan',
-    'Microsoft.WindowsSoundRecorder',
-    'Microsoft.WindowsStore',
-    'Microsoft.WindowsTerminal',
-    'Microsoft.Xbox',
-    'Microsoft.Xbox.TCUI',
-    'Microsoft.XboxApp',
-    'Microsoft.XboxGameOverlay',
-    'Microsoft.XboxGamingOverlay',
-    'Microsoft.XboxIdentityProvider',
-    'Microsoft.XboxSpeechToTextOverlay',
-    'Microsoft.YourPhone',
-    'Microsoft.ZuneMusic',
-    'Microsoft.ZuneVideo',
-    'microsoft.microsoftskydrive',
-    'microsoft.windowscommunicationsapps',
-    'MicrosoftCorporationII.MailforSurfaceHub',
-    'MicrosoftCorporationII.MicrosoftFamily',
-    'MicrosoftCorporationII.QuickAssist',
-    'MicrosoftTeams',
-    'MicrosoftWindows.Client.WebExperience',
-    'MicrosoftWindows.CrossDevice',
-    'MSTeams',
-    'Netflix',
-    'OutlookPWA',
-    'PandoraMediaInc',
-    'SpotifyAB.SpotifyMusic',
-    'TikTok',
-    'Twitter',
-    'WhatsAppDesktop',
-    'WinZipUniversal'
+Write-Host "  - Dynamically scanning and removing UWP/APPX apps..." -ForegroundColor DarkGray
+
+$KeepApps = @(
+    "Microsoft.DesktopAppInstaller",
+    "Microsoft.SecHealthUI",
+    "Microsoft.VCLibs",
+    "Microsoft.UI.Xaml",
+    "Microsoft.NET.Native",
+    "Microsoft.AV1VideoExtension",
+    "Microsoft.AVCEncoderVideoExtension",
+    "Microsoft.HEIFImageExtension",
+    "Microsoft.VP9VideoExtensions",
+    "Microsoft.WebMediaExtensions",
+    "Microsoft.WebpImageExtension"
 )
 
 $InstalledPackages = Get-AppxProvisionedPackage -Path $MountDir
 
-foreach ($App in $AppsToRemove) {
-    $TargetPackages = $InstalledPackages | Where-Object { $_.DisplayName -match $App -or $_.PackageName -match $App }
-    if ($TargetPackages) {
-        foreach ($Target in $TargetPackages) {
-            Write-Host "  - Deleted $($Target.DisplayName)" -ForegroundColor DarkGray
-            Remove-AppxProvisionedPackage -Path $MountDir -PackageName $Target.PackageName -ErrorAction SilentlyContinue 2>$null | Out-Null
+foreach ($App in $InstalledPackages) {
+    $IsKept = $false
+    
+    foreach ($Keep in $KeepApps) {
+        if ($App.DisplayName -match $Keep -or $App.PackageName -match $Keep) {
+            $IsKept = $true
+            break
         }
+    }
+
+    if (-not $IsKept) {
+        Write-Host "  - Deleted $($App.DisplayName)" -ForegroundColor DarkGray
+        Remove-AppxProvisionedPackage -Path $MountDir -PackageName $App.PackageName -ErrorAction SilentlyContinue | Out-Null
+    } else {
+        Write-Host "  - Kept $($App.DisplayName)" -ForegroundColor Green
     }
 }
 
