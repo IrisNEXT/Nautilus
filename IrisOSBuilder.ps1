@@ -392,13 +392,13 @@ finally {
 # Phase 11: ResetBase
 Write-Host "`n[8/14] Deep cleaning image components..." -ForegroundColor Yellow
 
-Write-Output " - Applying ResetBase..." -ForegroundColor Yellow
+Write-Host "  - Applying ResetBase..." -ForegroundColor DarkGray
 dism.exe /Image:$MountDir /Cleanup-Image /StartComponentCleanup /ResetBase | Out-Null
 
-Write-Output "  - Emptying WinSxS Backup folder..." -ForegroundColor DarkGray
+Write-Host "  - Emptying WinSxS Backup folder..." -ForegroundColor DarkGray
 Remove-Item -Path "$MountDir\Windows\WinSxS\Backup\*" -Force -ErrorAction SilentlyContinue
 
-Write-Output "  - Emptying Windows Update Cache..." -ForegroundColor DarkGray
+Write-Host "  - Emptying Windows Update Cache..." -ForegroundColor DarkGray
 Remove-Item -Path "$MountDir\Windows\SoftwareDistribution\Download\*" -Recurse -Force -ErrorAction SilentlyContinue
 
 # Phase 12: Saving & Exporting
