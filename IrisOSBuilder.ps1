@@ -14,13 +14,14 @@ if (!([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdentity]:
 }
 
 # Phase 2: Creating workspaces
-$Workspace = "C:\IrisOSBuilder"
+$Workspace = "C:\NautilusBuilder"
 $MountDir = "$Workspace\Mount"
 $ExtractDir = "$Workspace\Extract"
 $FinalISO = "C:\IrisOS.iso"
 
 Clear-Host
 Write-Host "=== IrisOS Nautilus w/ Administrator Builder ===" -ForegroundColor Cyan
+Write-Host "=== for Windows 11 ===" -ForegroundColor Cyan
 
 # Phase 3: Cleaning stuffs
 Write-Host "[*] Cleaning up previous workspaces..." -ForegroundColor DarkGray
