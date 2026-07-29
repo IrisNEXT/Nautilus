@@ -181,7 +181,7 @@ foreach ($File in $TelemetryFiles) {
     }
 }
 
-Write-Output "  - Deleting Retail Demo & Help..." -ForegroundColor DarkGray
+Write-Host "  - Deleting Retail Demo & Help..." -ForegroundColor DarkGray
 $UselessFolders = @(
     "$MountDir\Windows\System32\RetailDemo",
     "$MountDir\Windows\Help",
@@ -194,23 +194,6 @@ foreach ($Folder in $UselessFolders) {
         takeown.exe /F $Folder /R /A /D Y 2>$null | Out-Null
         icacls.exe $Folder /grant "$($AdminGroup):(F)" /T /C /Q 2>$null | Out-Null
         Remove-Item -Path $Folder -Recurse -Force -ErrorAction SilentlyContinue
-    }
-}
-
-Write-Output "  - Deleting Accessibility Core (Narrator, Magnifier, OSK)..." -ForegroundColor DarkGray
-
-$AccessibilityExes = @(
-    "$MountDir\Windows\System32\Narrator.exe",
-    "$MountDir\Windows\System32\Magnify.exe",
-    "$MountDir\Windows\System32\osk.exe",
-    "$MountDir\Windows\System32\AtBroker.exe"
-)
-
-foreach ($File in $AccessibilityExes) {
-    if (Test-Path $File) {
-        takeown.exe /F $File /A 2>$null | Out-Null
-        icacls.exe $File /grant "$($AdminGroup):(F)" /C /Q 2>$null | Out-Null
-        Remove-Item -Path $File -Force -ErrorAction SilentlyContinue
     }
 }
 
