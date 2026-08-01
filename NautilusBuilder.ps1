@@ -140,10 +140,7 @@ foreach ($Path in $EdgePaths) {
 
 $OneDrivePaths = @(
     "$MountDir\Windows\System32\OneDriveSetup.exe",
-    "$MountDir\Windows\SysWOW64\OneDriveSetup.exe",
-    "$MountDir\Program Files\Microsoft OneDrive",
-    "$MountDir\Program Files (x86)\Microsoft OneDrive",
-    "$MountDir\Users\Default\AppData\Roaming\Microsoft\Windows\Start Menu\Programs\OneDrive.lnk"
+    "$MountDir\Windows\SysWOW64\OneDriveSetup.exe"
 )
 
 foreach ($Path in $OneDrivePaths) {
