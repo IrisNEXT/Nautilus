@@ -468,21 +468,16 @@ finally {
     Start-Sleep -Seconds 3
 }
 
-Write-Host "`n[11/14] Saving changes to boot.wim..." -ForegroundColor Yellow
+Write-Host "`n[12/14] Saving changes to boot.wim..." -ForegroundColor Yellow
 dism.exe /Unmount-Image /MountDir:"$MountDir" /Commit
 
-# Phase 14: Autounattend.xml
-Write-Host "`n[12/14] Generating autounattend.xml..." -ForegroundColor Yellow
+# Phase 13: Autounattend.xml
+Write-Host "`n[13/14] Generating autounattend.xml..." -ForegroundColor Yellow
 $XmlContent = @"
 <?xml version="1.0" encoding="utf-8"?>
 <unattend xmlns="urn:schemas-microsoft-com:unattend">
-    <settings pass="windowsPE">
-        <component name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
-            <UserData><AcceptEula>true</AcceptEula></UserData>
-        </component>
-    </settings>
     <settings pass="oobeSystem">
-        <component name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+        <component xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Microsoft-Windows-Shell-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
             <OOBE>
                 <HideEULAPage>true</HideEULAPage>
                 <HideOEMRegistrationScreen>true</HideOEMRegistrationScreen>
@@ -490,14 +485,39 @@ $XmlContent = @"
                 <HideWirelessSetupInOOBE>true</HideWirelessSetupInOOBE>
                 <ProtectYourPC>3</ProtectYourPC>
             </OOBE>
+            <ConfigureChatAutoInstall>false</ConfigureChatAutoInstall>
+        </component>
+    </settings>
+    <settings pass="windowsPE">
+        <component xmlns:wcm="http://schemas.microsoft.com/WMIConfig/2002/State" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" name="Microsoft-Windows-Setup" processorArchitecture="amd64" publicKeyToken="31bf3856ad364e35" language="neutral" versionScope="nonSxS">
+            <DynamicUpdate>
+                <WillShowUI>OnError</WillShowUI>
+            </DynamicUpdate>
+            <ImageInstall>
+                <OSImage>
+                    <Compact>false</Compact>
+                    <WillShowUI>OnError</WillShowUI>
+                    <InstallFrom>
+                        <MetaData wcm:action="add">
+                            <Key>/IMAGE/INDEX</Key>
+                            <Value>1</Value>
+                        </MetaData>
+                    </InstallFrom>
+                </OSImage>
+            </ImageInstall>
+            <UserData>
+                <ProductKey>
+                    <Key/>
+                </ProductKey>
+            </UserData>
         </component>
     </settings>
 </unattend>
 "@
 $XmlContent | Out-File -FilePath "$ExtractDir\autounattend.xml" -Encoding UTF8
 
-# Phase 15: Creating ISO files
-Write-Host "`n[13/14] ISO Creation Process..." -ForegroundColor Yellow
+# Phase 14: Creating ISO files
+Write-Host "`n[14/14] ISO Creation Process..." -ForegroundColor Yellow
 
 $OscdimgPath = "$Workspace\oscdimg.exe"
 $MicrosoftUrl = "https://msdl.microsoft.com/download/symbols/oscdimg.exe/3D44737265000/oscdimg.exe"
@@ -519,11 +539,11 @@ if (Test-Path $OscdimgPath) {
     
     Start-Process -FilePath $OscdimgPath -ArgumentList $BuildArgs -Wait -NoNewWindow
     
-    Write-Host "`n[14/14] Completed! Your ISO is ready at: $FinalISO" -ForegroundColor Green
+    Write-Host "`nCompleted! Your ISO is ready at: $FinalISO" -ForegroundColor Green
     Write-Host "Cleaning up workspace..." -ForegroundColor DarkGray
     Remove-Item -Path $Workspace -Recurse -Force
 } else {
-    Write-Host "`n[!] Cannot compress into ISO, your custom Windows path is: $ExtractDir" -ForegroundColor Yellow
+    Write-Host "`n[!] Cannot compress into ISO, your Windows path is: $ExtractDir" -ForegroundColor Yellow
 }
 
 Write-Host "`nPress Enter to exit..."
