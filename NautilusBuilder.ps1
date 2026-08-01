@@ -220,22 +220,23 @@ foreach ($Feature in $OptionalFeatures) {
     }
 }
 
-# Phase 9: Removing SystemPackages
-Write-Host "`n[6/14] Removing system packages..." -ForegroundColor Yellow
+# Phase 8: Removing SystemPackages
+Write-Host "`n[7/14] Removing system packages..." -ForegroundColor Yellow
 
 $PackagePatterns = @(
-    "*QuickAssist-*",
     "*InternetExplorer-Optional*",
-    "*MediaPlayer*",
-    "*WordPad-FoD*",
-    "*StepsRecorder*",
-    "*TabletPCMath*",
-    "*PowerShell-ISE-FOD*",
-    "*Wallpaper-Content-Extended*",
     "*LanguageFeatures-Handwriting*",
     "*LanguageFeatures-OCR*",
     "*LanguageFeatures-Speech*",
-    "*LanguageFeatures-TextToSpeech*"
+    "*LanguageFeatures-TextToSpeech*",
+    "*MediaPlayer*",
+    "*OneDrive-Setup-Package*",
+    "*PowerShell-ISE-FOD*",
+    "*QuickAssist-*",
+    "*StepsRecorder*",
+    "*TabletPCMath*",
+    "*Wallpaper-Content-Extended*",
+    "*WordPad-FoD*"
 )
 
 Write-Host "  - Scanning system packages..." -ForegroundColor DarkGray
