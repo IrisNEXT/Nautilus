@@ -163,20 +163,15 @@ foreach ($Path in $OneDrivePaths) {
     }
 }
 
- Write-Host "  - Deleting Telemetry files..."
+Write-Host "`n[6/14] Removing Telemetry files..." -ForegroundColor Yellow
+
+Write-Host "  - Deleting Telemetry files..." -ForegroundColor DarkGray
 
 $TelemetryFiles = @(
-    "$MountDir\Windows\System32\wsqmcons.exe",
     "$MountDir\Windows\System32\appraiser.exe",
     "$MountDir\Windows\System32\CompatTelRunner.exe",
     "$MountDir\Windows\System32\DeviceCensus.exe",
-    "$MountDir\Windows\System32\WaasMedicAgent.exe",
-    "$MountDir\Windows\System32\sedlauncher.exe",
-    "$MountDir\Windows\System32\upfc.exe",
-    "$MountDir\Windows\System32\MusNotification.exe",
-    "$MountDir\Windows\System32\MusNotificationUx.exe",
-    "$MountDir\Windows\System32\GameBarPresenceWriter.exe",
-    "$MountDir\Windows\System32\SgrmBroker.exe"
+    "$MountDir\Windows\System32\wsqmcons.exe"
 )
 
 foreach ($File in $TelemetryFiles) {
