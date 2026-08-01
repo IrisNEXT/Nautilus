@@ -57,8 +57,12 @@ $IsoDrive = ($IsoImage | Get-Volume).DriveLetter + ":"
 robocopy "$IsoDrive\" "$ExtractDir" /E /MT:8 /NFL /NDL /NJH /NJS /nc /ns /np | Out-Null
 
 Dismount-DiskImage -ImagePath $IsoPath | Out-Null
-Set-ItemProperty -Path "$ExtractDir\sources\install.wim" -Name IsReadOnly -Value $false
-Set-ItemProperty -Path "$ExtractDir\sources\boot.wim" -Name IsReadOnly -Value $false
+$InstallSystem = "wim"
+if (Test-Path "$ExtractDir\sources\install.esd") {
+    $InstallSystem = "esd"
+}
+Set-ItemProperty -Path "$ExtractDir\sources\install.$InstallSystem" -Name IsReadOnly -Value $false -ErrorAction SilentlyContinue
+Set-ItemProperty -Path "$ExtractDir\sources\boot.wim" -Name IsReadOnly -Value $false -ErrorAction SilentlyContinue
 
 # Phase 6: Choosing index
 Write-Host "`n[2/14] List of available Windows SKUs:" -ForegroundColor Yellow
