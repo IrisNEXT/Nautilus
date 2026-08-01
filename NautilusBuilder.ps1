@@ -198,8 +198,8 @@ foreach ($Folder in $UselessFolders) {
     }
 }
 
+Write-Host "  - Deleting Optional features..."
 $OptionalFeatures = @(
-    "FaxServicesClientPackage",
     "Printing-Foundation-InternetPrinting-Client",
     "WorkFolders-Client",
     "MediaPlayback",
@@ -210,13 +210,13 @@ foreach ($Feature in $OptionalFeatures) {
     $CheckFeature = Get-WindowsOptionalFeature -Path $MountDir -FeatureName $Feature -ErrorAction SilentlyContinue
     
     if ($CheckFeature) {
-        Write-Host "  - Deleted $Feature" -ForegroundColor DarkGray
+        Write-Host "   - Removed $Feature" -ForegroundColor DarkGray
         try {
             Disable-WindowsOptionalFeature -Path $MountDir -FeatureName $Feature -Remove -NoRestart -ErrorAction Stop | Out-Null
         } catch {
         }
     } else {
-        Write-Host "  - Skipped $Feature (Not found in this Windows edition)" -ForegroundColor DarkGray
+        Write-Host "   - Skipped $Feature (Not found in this Windows edition)" -ForegroundColor DarkGray
     }
 }
 
