@@ -82,17 +82,23 @@ Write-Host "`n[4/14] Debloating system apps..." -ForegroundColor Yellow
 Write-Host "  - Dynamically scanning and removing UWP/APPX apps..." -ForegroundColor DarkGray
 
 $KeepApps = @(
-    "Microsoft.DesktopAppInstaller",
-    "Microsoft.SecHealthUI",
-    "Microsoft.VCLibs",
-    "Microsoft.UI.Xaml",
-    "Microsoft.NET.Native",
     "Microsoft.AV1VideoExtension",
     "Microsoft.AVCEncoderVideoExtension",
+    "Microsoft.DesktopAppInstaller",
     "Microsoft.HEIFImageExtension",
+    "Microsoft.HEVCVideoExtension",
+    "Microsoft.MPEG2VideoExtension",
+    "Microsoft.NET.Native",
+    "Microsoft.RawImageExtension",
+    "Microsoft.SecHealthUI",
+    "Microsoft.Services.Store.Engagement",
+    "Microsoft.StorePurchaseApp",
+    "Microsoft.UI.Xaml",
+    "Microsoft.VCLibs",
     "Microsoft.VP9VideoExtensions",
     "Microsoft.WebMediaExtensions",
-    "Microsoft.WebpImageExtension"
+    "Microsoft.WebpImageExtension",
+    "Microsoft.WindowsAppRuntime"
 )
 
 $InstalledPackages = Get-AppxProvisionedPackage -Path $MountDir
