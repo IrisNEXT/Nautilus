@@ -13,6 +13,8 @@ Building with pure performance for both low-end and high-end PCs, Nautilus does 
 > [!Warning]
 > Great care went into making sure this script does not unintentionally break any OS functionality, but use at your own risk! This script modifies core system images offline. Always test your generated ISO on a Virtual Machine before deploying it on your main hardware.
 
+> This script will work only on Windows 11, if you're looking for Windows 10 builder, you can give it a look on [Elflower](https://github.com/PastelPinkLab/Elflower).
+
 ## What things will be removed:
 
 #### APPXs
