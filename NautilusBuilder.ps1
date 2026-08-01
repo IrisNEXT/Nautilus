@@ -145,10 +145,21 @@ $OneDrivePaths = @(
 
 foreach ($Path in $OneDrivePaths) {
     if (Test-Path $Path) {
-        Write-Host "  - Removed $Path" -ForegroundColor DarkGray
-        takeown.exe /F $Path /A 2>$null | Out-Null
-        icacls.exe $Path /grant "$($AdminGroup):(F)" /C /Q 2>$null | Out-Null
-        Remove-Item -Path $Path -Force -ErrorAction SilentlyContinue
+        if ((Get-Item $Path) -is [System.IO.DirectoryInfo]) {
+            takeown.exe /F $Path /R /A /D Y 2>$null | Out-Null
+            icacls.exe $Path /grant "$($AdminGroup):(F)" /T /C /Q 2>$null | Out-Null
+        } else {
+            takeown.exe /F $Path /A 2>$null | Out-Null
+            icacls.exe $Path /grant "$($AdminGroup):(F)" /C /Q 2>$null | Out-Null
+        }
+        
+        Remove-Item -Path $Path -Recurse -Force -ErrorAction SilentlyContinue
+
+        if (!(Test-Path $Path)) {
+            Write-Host "  - Removed $Path" -ForegroundColor DarkGray
+        } else {
+            Write-Host "  - Failed to remove $Path" -ForegroundColor Red
+        }
     }
 }
 
