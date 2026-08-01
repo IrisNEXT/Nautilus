@@ -66,23 +66,12 @@ Set-ItemProperty -Path "$ExtractDir\sources\boot.wim" -Name IsReadOnly -Value $f
 
 # Phase 6: Choosing index
 Write-Host "`n[2/14] List of available Windows SKUs:" -ForegroundColor Yellow
-dism.exe /Get-WimInfo /WimFile:"$ExtractDir\sources\install.wim"
+dism.exe /Get-WimInfo /WimFile:"$ExtractDir\sources\install.$InstallSystem"
 $WimIndex = Read-Host "-> Enter the index number you want to build (e.g., 6)"
 if ([string]::IsNullOrWhiteSpace($WimIndex)) { $WimIndex = "1" }
 
-# Phase 7: Extracting
 Write-Host "`n[3/14] Extracting Windows system (Mounting WIM Index $WimIndex)..." -ForegroundColor Yellow
-
-if (!(Test-Path "$MountDir")) {
-    New-Item -ItemType Directory -Force -Path "$MountDir" | Out-Null
-}
-
-dism.exe /Mount-Image /ImageFile:"$ExtractDir\sources\install.wim" /Index:$WimIndex /MountDir:"$MountDir" /Optimize
-
-if (!(Test-Path "$MountDir\Windows")) {
-    Write-Host "Error: Cannot mount the WIM file. Check your storage space :3" -ForegroundColor Red
-    Exit
-}
+dism.exe /Mount-Image /ImageFile:"$ExtractDir\sources\install.$InstallSystem" /Index:$WimIndex /MountDir:"$MountDir" /Optimize
 
 # Phase 8: Debloating
 
