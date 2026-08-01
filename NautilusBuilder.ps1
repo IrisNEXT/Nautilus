@@ -73,7 +73,7 @@ if ([string]::IsNullOrWhiteSpace($WimIndex)) { $WimIndex = "1" }
 Write-Host "`n[3/14] Extracting Windows system (Mounting WIM Index $WimIndex)..." -ForegroundColor Yellow
 dism.exe /Mount-Image /ImageFile:"$ExtractDir\sources\install.$InstallSystem" /Index:$WimIndex /MountDir:"$MountDir" /Optimize
 
-# Phase 8: Debloating
+# Phase 7: Debloating
 
 $AdminGroup = (New-Object System.Security.Principal.SecurityIdentifier('S-1-5-32-544')).Translate([System.Security.Principal.NTAccount]).Value
 
