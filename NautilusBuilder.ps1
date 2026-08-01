@@ -448,19 +448,13 @@ Rename-Item -Path $OptimizedFile -NewName "install.$DestExt"
 
 $InstallSystem = $DestExt
 
-# Phase 13: Bypass
-Write-Host "`n[10/14] Mounting boot.wim to bypass hardwares..." -ForegroundColor Yellow
+# Phase 12: Bypass
+Write-Host "`n[11/14] Mounting boot.wim to bypass hardwares..." -ForegroundColor Yellow
 dism.exe /Mount-Image /ImageFile:"$ExtractDir\sources\boot.wim" /Index:2 /MountDir:"$MountDir"
 
 try {
-    reg load HKLM\zDEFAULT "$MountDir\Windows\System32\config\default" | Out-Null
-    reg load HKLM\zNTUSER "$MountDir\Users\Default\ntuser.dat" | Out-Null
     reg load HKLM\zSYSTEM "$MountDir\Windows\System32\config\SYSTEM" | Out-Null
 
-    Set-RegistryValue 'HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache' 'SV1' 'REG_DWORD' '0'
-    Set-RegistryValue 'HKLM\zDEFAULT\Control Panel\UnsupportedHardwareNotificationCache' 'SV2' 'REG_DWORD' '0'
-    Set-RegistryValue 'HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache' 'SV1' 'REG_DWORD' '0'
-    Set-RegistryValue 'HKLM\zNTUSER\Control Panel\UnsupportedHardwareNotificationCache' 'SV2' 'REG_DWORD' '0'
     Set-RegistryValue 'HKLM\zSYSTEM\Setup\LabConfig' 'BypassCPUCheck' 'REG_DWORD' '1'
     Set-RegistryValue 'HKLM\zSYSTEM\Setup\LabConfig' 'BypassRAMCheck' 'REG_DWORD' '1'
     Set-RegistryValue 'HKLM\zSYSTEM\Setup\LabConfig' 'BypassSecureBootCheck' 'REG_DWORD' '1'
@@ -469,8 +463,6 @@ try {
     Set-RegistryValue 'HKLM\zSYSTEM\Setup\MoSetup' 'AllowUpgradesWithUnsupportedTPMOrCPU' 'REG_DWORD' '1'
 }
 finally {
-    reg unload HKLM\zDEFAULT 2>$null | Out-Null
-    reg unload HKLM\zNTUSER 2>$null | Out-Null
     reg unload HKLM\zSYSTEM 2>$null | Out-Null
     [GC]::Collect()
     Start-Sleep -Seconds 3
