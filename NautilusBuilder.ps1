@@ -425,28 +425,28 @@ Write-Host "  - Emptying Windows Update Cache..." -ForegroundColor DarkGray
 Remove-Item -Path "$MountDir\Windows\SoftwareDistribution\Download\*" -Recurse -Force -ErrorAction SilentlyContinue
 Remove-Item -Path "$MountDir\Windows\SoftwareDistribution\DataStore\*" -Recurse -Force -ErrorAction SilentlyContinue
 
-# Phase 12: Saving & Exporting
-Write-Host "`n[9/14] Saving changes to install.wim..." -ForegroundColor Yellow
+# Phase 11: Saving & Exporting
+Write-Host "`n[10/14] Saving changes to install.$InstallSystem..." -ForegroundColor Yellow
 dism.exe /Unmount-Image /MountDir:"$MountDir" /Commit | Out-Null
 
-Write-Host "`n[!] Choose the compression format:" -ForegroundColor Cyan
-Write-Host " 1. WIM (Faster)"
-Write-Host " 2. ESD (Slower, but lower image file)"
-$CompressChoice = Read-Host "-> Which one do you wanna choose"
+Write-Host "`n[!] Choose compression:" -ForegroundColor Cyan
+Write-Host "   [1] WIM (Fast but also recommended)" -ForegroundColor Cyan
+Write-Host "   [2] ESD (Slow, smallest size)" -ForegroundColor Cyan
+$Choice = Read-Host "-> Enter 1 or 2 (Default: 1)"
 
-if ($CompressChoice -eq '2') {
-    Write-Host "  - Exporting and heavily compressing to install.esd (This will take a long time :3)..." -ForegroundColor DarkGray
-    dism.exe /Export-Image /SourceImageFile:"$ExtractDir\sources\install.wim" /SourceIndex:$WimIndex /DestinationImageFile:"$ExtractDir\sources\install.esd" /Compress:recovery | Out-Null
-    
-    Write-Host "  - Removing the old WIM file..." -ForegroundColor DarkGray
-    Remove-Item -Path "$ExtractDir\sources\install.wim" -Force
-} else {
-    Write-Host "  - Exporting and optimizing install.wim..." -ForegroundColor DarkGray
-    dism.exe /Export-Image /SourceImageFile:"$ExtractDir\sources\install.wim" /SourceIndex:$WimIndex /DestinationImageFile:"$ExtractDir\sources\install_optimized.wim" /Compress:max | Out-Null
-    
-    Remove-Item -Path "$ExtractDir\sources\install.wim" -Force
-    Rename-Item -Path "$ExtractDir\sources\install_optimized.wim" -NewName "install.wim"
-}
+$DestExt = if ($Choice -eq '2') { "esd" } else { "wim" }
+$CompressType = if ($Choice -eq '2') { "recovery" } else { "max" }
+
+$SourceFile = "$ExtractDir\sources\install.$InstallSystem"
+$OptimizedFile = "$ExtractDir\sources\install_optimized.$DestExt"
+
+Write-Host "  - Exporting and optimizing to install.$DestExt..." -ForegroundColor DarkGray
+dism.exe /Export-Image /SourceImageFile:$SourceFile /SourceIndex:$WimIndex /DestinationImageFile:$OptimizedFile /Compress:$CompressType | Out-Null
+
+Remove-Item -Path $SourceFile -Force
+Rename-Item -Path $OptimizedFile -NewName "install.$DestExt"
+
+$InstallSystem = $DestExt
 
 # Phase 13: Bypass
 Write-Host "`n[10/14] Mounting boot.wim to bypass hardwares..." -ForegroundColor Yellow
