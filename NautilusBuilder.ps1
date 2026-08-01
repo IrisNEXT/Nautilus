@@ -31,6 +31,7 @@ reg unload HKLM\zNTUSER 2>$null | Out-Null
 reg unload HKLM\zSOFTWARE 2>$null | Out-Null
 reg unload HKLM\zSYSTEM 2>$null | Out-Null
 dism.exe /Cleanup-Wim /Quiet | Out-Null
+dism.exe /Cleanup-Mountpoints /Quiet | Out-Null
 
 if (Test-Path $Workspace) { 
     Remove-Item -Path $Workspace -Recurse -Force -ErrorAction SilentlyContinue 
