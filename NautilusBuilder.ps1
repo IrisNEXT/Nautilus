@@ -126,9 +126,7 @@ Write-Host "`n[5/14] Removing Edge and OneDrive..." -ForegroundColor Yellow
 $EdgePaths = @(
     "$MountDir\Program Files (x86)\Microsoft\Edge",
     "$MountDir\Program Files (x86)\Microsoft\EdgeUpdate",
-    "$MountDir\Program Files (x86)\Microsoft\EdgeCore",
-    "$MountDir\Windows\System32\Microsoft-Edge-Webview",
-    "$MountDir\Program Files (x86)\Microsoft\EdgeWebView"
+    "$MountDir\Program Files (x86)\Microsoft\EdgeCore"
 )
 
 foreach ($Path in $EdgePaths) {
