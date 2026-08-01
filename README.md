@@ -4,7 +4,7 @@ Nautilus is a lightweight, free and easy to use PowerShell that allows you to qu
 
 Building with pure performance for both low-end and high-end PCs, Nautilus does not use CompactOS, makes the process quick and easy!
 
-[!Powershell](/Images/powershell.png)
+![Powershell](/Images/powershell.png)
 
 > Nautilus is also heavily based on Tiny11Builder in Tweaks, APPXs removal, etc...
 
